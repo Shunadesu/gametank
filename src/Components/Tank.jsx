@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
-const TankGame = () => {
+const TankGame = ({isShow, setIsShow}) => {
   const [targets, setTargets] = useState(() => {
     return Array.from({ length: Math.floor(Math.random() * 5) + 1 }, (_, index) => ({
       id: index + 1,
@@ -13,7 +13,7 @@ const TankGame = () => {
       speedY: Math.random() * 2 + 1, // Tốc độ di chuyển theo chiều dọc
     }));
   });
-
+  // const [isShow, setIsShow] = useState(true) // sunny checking something
   const [angle, setAngle] = useState(0);
   const [direction, setDirection] = useState(5);
   const [bullets, setBullets] = useState([]);
@@ -196,87 +196,115 @@ const TankGame = () => {
     setBullets([]);
   };
 
+
+  if (isShow == true)
   return (
-    <div className="h-screen flex flex-col items-center justify-center">
-      <div className="p-4 mb-4 w-[1000px] h-[1000px] relative">
-        <h1 className="text-xl font-bold">Tank Game - Score: {score}</h1>
-        <h2 className="text-lg">Time Left: {timeLeft}s</h2>
-        <div className="relative w-[600px] h-[550px] rounded-lg overflow-hidden shadow-lg" onClick={shootBullet}>
-          {gameOver && (
-            <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center z-10">
-              <h2 className="text-4xl font-bold text-white">Final Score: {score}</h2>
-              <button onClick={resetGame} className="mt-4 px-4 py-2 bg-blue-500 text-white rounded">Chơi Lại</button>
-              <button className="mt-2 px-4 py-2 bg-green-500 text-white rounded">Lấy Voucher</button>
-            </div>
-          )}
-          {/* Xe tăng */}
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex flex-col items-center">
-            {/* Thân xe tăng */}
-            <div className="relative flex flex-col items-center">
-              <div className="relative">
-                <div className="w-16 h-16 bg-gray-800 relative flex items-center justify-center">
-                  <div className="absolute w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center z-10">
-                    <div className='absolute top-[-40px]'>
-                      <motion.div
-                        className="w-3 h-16 bg-black"
-                        style={{ transformOrigin: 'bottom center', transform: `rotate(${angle}deg)` }}
-                        transition={{ type: 'spring', stiffness: 400, damping: 10 }}
-                      />
-                    </div>
-                  </div>
+  <div className="fixed inset-0 z-[100]">
+
+    {/* Overlay */}
+    <div className='w-full h-full bg-black bg-opacity-50 absolute z-10' />
+    <div className="w-full h-full p-4 mb-4 relative z-20 flex flex-col justify-center items-center">
+        <div className='p-4 bg-white flex gap-4 flex-col justify-center items-center relative rounded-2xl'>
+            <div className='grid grid-cols-3 w-full'>
+            
+              <div className='text-xl font-bold text-red-600 px-2 py-1 flex items-center justify-start'>
+              Score: {score}
+              </div>
+
+              <div className='flex flex-col gap-2 justify-center items-center'>
+                <h1 className="text-xl font-bold">Tank Game </h1>
+                <h2  className="text-lg">Time Left: {timeLeft}s</h2>
+              </div>
+
+              <div className='flex justify-end items-center'>
+                <div 
+                  onClick={() => setIsShow(!isShow)}
+                  className=' w-[40px] h-[40px] cursor-pointer border rounded-[100%] px-2 py-1  hover:opacity-75 hover:bg-amber-200 transition-all 0.3s ease-in text-center'>
+                    x
                 </div>
-                <div className="absolute -left-6 -top-2 w-6 h-20 bg-gray-700 rounded-md"></div>
-                <div className="absolute -right-6 -top-2 w-6 h-20 bg-gray-700 rounded-md"></div>
               </div>
             </div>
-          </div>
 
-          {/* Đạn */}
-          {bullets.map((bullet, index) => (
-            <motion.div
-              key={index}
-              className="absolute w-2 h-6 bg-gradient-to-b from-yellow-400 to-orange-600 rounded-full shadow-lg"
-              style={{
-                left: `calc(50% + ${bullet.x}px)`,
-                bottom: `calc(20px + ${bullet.y}px)`,
-                transform: `rotate(${bullet.angle}deg)`,
-              }}
-            />
-          ))}
+            
+            <div className="relative w-[600px] h-[550px] rounded-lg overflow-hidden shadow-lg bg-green-200" onClick={shootBullet}>
+            {gameOver && (
+                <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center z-10">
+                <h2 className="text-4xl font-bold text-white">Final Score: {score}</h2>
+                <button onClick={resetGame} className="mt-4 px-4 py-2 bg-blue-500 text-white rounded">Chơi Lại</button>
+                <button className="mt-2 px-4 py-2 bg-green-500 text-white rounded">Lấy Voucher</button>
+                </div>
+            )}
+            {/* Xe tăng */}
+            <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center">
+                {/* Thân xe tăng */}
+                <div className="relative flex flex-col items-center">
+                <div className="relative">
+                    <div className="w-16 h-16 bg-gray-800 relative flex items-center justify-center">
+                    <div className="absolute w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center z-10">
+                        <div className='absolute top-[-30px]'>
+                        <motion.div
+                            className="w-3 h-16 bg-black"
+                            style={{ transformOrigin: 'bottom center', transform: `rotate(${angle}deg)` }}
+                            transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+                        />
+                        </div>
+                    </div>
+                    </div>
+                    <div className="absolute -left-6 -top-2 w-6 h-20 bg-gray-700 rounded-md"></div>
+                    <div className="absolute -right-6 -top-2 w-6 h-20 bg-gray-700 rounded-md"></div>
+                </div>
+                </div>
+            </div>
 
-          {/* Mục tiêu */}
-          {targets.map((target) => (
-            <motion.div key={target.id} 
-              className="absolute text-red-500 font-bold" 
-              animate={target.fallen ? { scale: [1, 1.5, 0], opacity: [1, 0.5, 0], rotate: [0, 360, 720] } : {}}
-              transition={{ duration: 0.1 }} 
-              style={{ left: `calc(50% + ${target.x}px)`, bottom: `calc(20px + ${target.y - target.fallProgress}px)` }}>
-              <div className='w-16 h-16'>
-                <img src="https://previews.123rf.com/images/ericmilos/ericmilos1001/ericmilos100100157/6301710-vector-transparent-target-illustration-put-this-target-on-your-image.jpg" alt="" className='w-full h-full object-contain'/>
-              </div>
-            </motion.div>
-          ))}
+            {/* Đạn */}
+            {bullets.map((bullet, index) => (
+                <motion.div
+                key={index}
+                className="absolute w-2 h-6 bg-gradient-to-b from-yellow-400 to-orange-600 rounded-full shadow-lg"
+                style={{
+                    left: `calc(50% + ${bullet.x}px)`,
+                    bottom: `calc(20px + ${bullet.y}px)`,
+                    transform: `rotate(${bullet.angle}deg)`,
+                }}
+                />
+            ))}
 
-          {/* Hiệu ứng cộng điểm */}
-          {scoreAnimations.map((anim) => (
-            <motion.div
-            key={`${anim.id}-${anim.x}-${anim.y}`}
-              className="absolute text-green-500 font-bold"
-              initial={{ opacity: 1, y: 0 }}
-              animate={{ opacity: 0, y: -50 }}
-              transition={{ duration: 1 }}
-              style={{
-                left: `calc(50% + ${anim.x}px)`,
-                bottom: `calc(20px + ${anim.y}px)`
-              }}
-            >
-              +10
-            </motion.div>
-          ))}
+            {/* Mục tiêu */}
+            {targets.map((target) => (
+                <motion.div key={target.id} 
+                className="absolute text-red-500 font-bold" 
+                animate={target.fallen ? { scale: [1, 1.5, 0], opacity: [1, 0.5, 0], rotate: [0, 360, 720] } : {}}
+                transition={{ duration: 0.1 }} 
+                style={{ left: `calc(50% + ${target.x}px)`, bottom: `calc(20px + ${target.y - target.fallProgress}px)` }}>
+                <div className='w-16 h-16'>
+                    <img src="https://previews.123rf.com/images/ericmilos/ericmilos1001/ericmilos100100157/6301710-vector-transparent-target-illustration-put-this-target-on-your-image.jpg" alt="" className='w-full h-full object-contain'/>
+                </div>
+                </motion.div>
+            ))}
+
+            {/* Hiệu ứng cộng điểm */}
+            {scoreAnimations.map((anim) => (
+                <motion.div
+                key={`${anim.id}-${anim.x}-${anim.y}`}
+                className="absolute text-green-500 font-bold"
+                initial={{ opacity: 1, y: 0 }}
+                animate={{ opacity: 0, y: -50 }}
+                transition={{ duration: 1 }}
+                style={{
+                    left: `calc(50% + ${anim.x}px)`,
+                    bottom: `calc(20px + ${anim.y}px)`
+                }}
+                >
+                +10
+                </motion.div>
+            ))}
+            </div>
         </div>
-      </div>
     </div>
+    </div>
+      
   );
+
 };
 
 export default TankGame;
