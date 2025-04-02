@@ -81,10 +81,10 @@ const TankGame = ({isShow, setIsShow}) => {
             setTargets((prevTargets) =>
               prevTargets.map((target) => {
                 const isHit =
-                  bullet.x >= target.x - 50 &&
-                  bullet.x <= target.x + 50 &&
-                  bullet.y >= target.y - 50 &&
-                  bullet.y <= target.y + 50;
+                  bullet.x >= target.x - 30 &&
+                  bullet.x <= target.x + 30 &&
+                  bullet.y >= target.y - 30 &&
+                  bullet.y <= target.y + 30;
 
                 if (!target.fallen && isHit) {
                   hit = true;
@@ -129,13 +129,13 @@ const TankGame = ({isShow, setIsShow}) => {
   useEffect(() => {
     if (targets.length === 0) {
       setTargets(
-        Array.from({ length: Math.floor(Math.random() * 5) + 1 }, (_, index) => ({
+        Array.from({ length: Math.floor(Math.random() * 7) + 1 }, (_, index) => ({
           id: index + 1,
           x: -200 + index * 100,
           y: 400,
           fallen: false,
           fallProgress: 0,
-          speedX: Math.random() * 2 + 1, // Tốc độ di chuyển theo chiều ngang
+          speedX: Math.random() * 3 + 1, // Tốc độ di chuyển theo chiều ngang
           speedY: Math.random() * 2 + 1, // Tốc độ di chuyển theo chiều dọc
         }))
       );
@@ -147,22 +147,30 @@ const TankGame = ({isShow, setIsShow}) => {
       setTargets((prevTargets) =>
         prevTargets.map((target) => {
           if (target.fallen) return target;
-
-          // Di chuyển mục tiêu
+  
+          // Giới hạn mục tiêu chỉ di chuyển trong 50% phía trên
           let newX = target.x + target.speedX;
           let newY = target.y + target.speedY;
-
-          // Thay đổi hướng khi chạm biên
+  
+          // Nếu mục tiêu vượt quá 50% màn hình, đảo chiều
+          if (newY > 450) {
+            target.speedY = -Math.abs(target.speedY); // Di chuyển lên
+          }
+          if (newY < 200) {
+            target.speedY = Math.abs(target.speedY); // Di chuyển xuống
+          }
+  
+          // Đảo hướng khi chạm biên
           if (newX > 250 || newX < -250) target.speedX = -target.speedX;
-          if (newY > 450 || newY < 0) target.speedY = -target.speedY;
-
+  
           return { ...target, x: newX, y: newY };
         })
       );
     }, 50);
-
+  
     return () => clearInterval(interval);
   }, []);
+   
 
   useEffect(() => {
     if (score >= 50) {
@@ -226,7 +234,9 @@ const TankGame = ({isShow, setIsShow}) => {
             </div>
 
             
-            <div className="relative w-[600px] h-[550px] rounded-lg overflow-hidden shadow-lg bg-green-200" onClick={shootBullet}>
+            <div className="relative w-[550px] h-[550px] rounded-lg overflow-hidden shadow-lg bg-green-200" onClick={shootBullet}>
+              <img src="https://beta-api.bachlongmobile.com/media/MageINIC/bannerslider/nen.jpg" alt="" className='w-full h-full object-contain'/>
+
             {gameOver && (
                 <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center z-10">
                 <h2 className="text-4xl font-bold text-white">Final Score: {score}</h2>
@@ -235,23 +245,24 @@ const TankGame = ({isShow, setIsShow}) => {
                 </div>
             )}
             {/* Xe tăng */}
-            <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center">
+            <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex flex-col items-center">
                 {/* Thân xe tăng */}
                 <div className="relative flex flex-col items-center">
                 <div className="relative">
-                    <div className="w-16 h-16 bg-gray-800 relative flex items-center justify-center">
-                    <div className="absolute w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center z-10">
-                        <div className='absolute top-[-30px]'>
-                        <motion.div
-                            className="w-3 h-16 bg-black"
-                            style={{ transformOrigin: 'bottom center', transform: `rotate(${angle}deg)` }}
-                            transition={{ type: 'spring', stiffness: 400, damping: 10 }}
-                        />
+                    <div className="w-28 h-28  relative flex items-center justify-center">
+                      <img src="https://beta-api.bachlongmobile.com/media/MageINIC/bannerslider/xe_tang.png" alt="" className='w-full h-full object-contain z-20'/>
+                    <div className="absolute w-10 h-10  rounded-full flex items-center justify-center ">
+                        <div style={{transform: `rotate(-60deg)`}} className='absolute top-[-80px]'>
+                          <motion.div
+                            className="w-40 h-32"
+                            style={{ transformOrigin: 'center', transform: `rotate(${angle}deg)` }}
+                            transition={{ type: 'spring', stiffness: 500, damping: 20 }}>
+
+                            <img src="https://beta-api.bachlongmobile.com/media/MageINIC/bannerslider/nong.png" alt="" className='w-full h-full object-contain' />
+                          </motion.div>
                         </div>
                     </div>
                     </div>
-                    <div className="absolute -left-6 -top-2 w-6 h-20 bg-gray-700 rounded-md"></div>
-                    <div className="absolute -right-6 -top-2 w-6 h-20 bg-gray-700 rounded-md"></div>
                 </div>
                 </div>
             </div>
@@ -276,8 +287,8 @@ const TankGame = ({isShow, setIsShow}) => {
                 animate={target.fallen ? { scale: [1, 1.5, 0], opacity: [1, 0.5, 0], rotate: [0, 360, 720] } : {}}
                 transition={{ duration: 0.1 }} 
                 style={{ left: `calc(50% + ${target.x}px)`, bottom: `calc(20px + ${target.y - target.fallProgress}px)` }}>
-                <div className='w-16 h-16'>
-                    <img src="https://previews.123rf.com/images/ericmilos/ericmilos1001/ericmilos100100157/6301710-vector-transparent-target-illustration-put-this-target-on-your-image.jpg" alt="" className='w-full h-full object-contain'/>
+                <div className='w-20 h-20 rounded-full'>
+                    <img src="https://beta-api.bachlongmobile.com/media/MageINIC/bannerslider/bia.png" alt="" className='w-full h-full'/>
                 </div>
                 </motion.div>
             ))}
@@ -286,7 +297,7 @@ const TankGame = ({isShow, setIsShow}) => {
             {scoreAnimations.map((anim) => (
                 <motion.div
                 key={`${anim.id}-${anim.x}-${anim.y}`}
-                className="absolute text-green-500 font-bold"
+                className="absolute text-red-500 font-bold"
                 initial={{ opacity: 1, y: 0 }}
                 animate={{ opacity: 0, y: -50 }}
                 transition={{ duration: 1 }}
