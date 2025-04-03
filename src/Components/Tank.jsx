@@ -161,7 +161,7 @@ const TankGame = ({isShow, setIsShow}) => {
           }
   
           // Đảo hướng khi chạm biên
-          if (newX > 250 || newX < -250) target.speedX = -target.speedX;
+          if (newX > 200 || newX < -200) target.speedX = -target.speedX;
   
           return { ...target, x: newX, y: newY };
         })

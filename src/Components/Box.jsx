@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import FlappyVoucher from './FlappyVoucher'
 
 const Box = ({isShow, setIsShow}) => {
 
@@ -50,6 +51,8 @@ const Box = ({isShow, setIsShow}) => {
             className='cursor-pointer flex justify-center items-center border w-full h-[20vh] shadow-2xl'>
                 Sieu sale dai le, choi game lay voucher
             </div>
+
+            <FlappyVoucher />
         </div>
     </div>
   )
